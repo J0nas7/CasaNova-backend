@@ -17,7 +17,7 @@ class CreateCasaNovaTables extends Migration
             $table->string($prefix . 'First_Name', 255);
             $table->string($prefix . 'Last_Name', 255);
             $table->string($prefix . 'Email')->unique(); // Unique email
-            $table->string($prefix . 'Password_Hash');
+            $table->string($prefix . 'Password');
             $table->string($prefix . 'Phone_Number')->nullable();
             $table->enum($prefix . 'Role', ['Tenant', 'Landlord', 'Administrator']);
             $table->string($prefix . 'Profile_Picture')->nullable();
