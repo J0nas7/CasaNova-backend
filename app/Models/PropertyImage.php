@@ -10,7 +10,7 @@ class PropertyImage extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'CN_PropertyImages';
+    protected $table = 'CN_Property_Images';
     protected $primaryKey = 'Image_ID';
 
     protected $fillable = [

@@ -24,8 +24,6 @@ class CreateCasaNovaTables extends Migration
             $table->string($prefix . 'Address')->nullable();
 
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
-
-            $table->timestamps();
         });
 
         // Properties table (Landlords create property listings)
@@ -53,7 +51,6 @@ class CreateCasaNovaTables extends Migration
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 
             $table->foreign('User_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
-            $table->timestamps();
         });
 
         // Property Images table
@@ -69,7 +66,6 @@ class CreateCasaNovaTables extends Migration
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 
             $table->foreign('Property_ID')->references('Property_ID')->on('CN_Properties')->onDelete('cascade');
-            $table->timestamps();
         });
 
         // Messages table (communication between tenants and landlords)
@@ -89,7 +85,6 @@ class CreateCasaNovaTables extends Migration
             $table->foreign('Sender_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
             $table->foreign('Receiver_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
             $table->foreign('Property_ID')->references('Property_ID')->on('CN_Properties')->onDelete('cascade');
-            $table->timestamps();
         });
 
         // Favorites table (tenants can favorite properties they are interested in)
@@ -99,7 +94,8 @@ class CreateCasaNovaTables extends Migration
             $table->bigIncrements($prefix . 'ID'); // Primary key
             $table->bigInteger('Tenant_ID')->unsigned(); // Foreign key to CN_Users (tenant)
             $table->bigInteger('Property_ID')->unsigned(); // Foreign key to CN_Properties
-            $table->timestamps(); // Date and time when favorite was added
+            
+            MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 
             $table->foreign('Tenant_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
             $table->foreign('Property_ID')->references('Property_ID')->on('CN_Properties')->onDelete('cascade');
@@ -113,7 +109,8 @@ class CreateCasaNovaTables extends Migration
             $table->bigInteger('User_ID')->unsigned(); // User receiving the notification
             $table->string($prefix . 'Message', 500); // Notification message
             $table->boolean($prefix . 'Read')->default(false); // Read status
-            $table->timestamps(); // Date and time when notification was created
+            
+            MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 
             $table->foreign('User_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
         });

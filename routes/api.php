@@ -5,6 +5,8 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PropertyImageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\UserOnly;
 
@@ -34,7 +36,10 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
      * DELETE /properties/{property} - destroy
      * This single line of code handles all these CRUD routes:
      */
-    Route::apiResource('properties', PropertyController::class);
+    //Route::apiResource('properties', PropertyController::class);
+    Route::post('/properties', [PropertyController::class, 'store']);
+    Route::put('/properties/{property}', [PropertyController::class, 'update']);
+    Route::delete('/properties/{property}', [PropertyController::class, 'destroy']);
     // Custom routes to get properties by user ID and price range
     Route::get('/properties/user/{userId}', [PropertyController::class, 'getPropertiesByUser']);
     // Custom route to get properties by price range
@@ -54,6 +59,37 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
     Route::apiResource('favorites', FavoriteController::class);
     // Custom route to remove a favorite by User_ID and Property_ID
     Route::delete('/favorites/user/{userId}/property/{propertyId}', [FavoriteController::class, 'removeByUserAndProperty']);
+
+
+
+
+    // MessageController Routes
+    /**
+     * GET /messages - index
+     * POST /messages - store
+     * GET /messages/{message} - show
+     * PUT /messages/{message} - update
+     * DELETE /messages/{message} - destroy
+     * This single line of code handles all these CRUD routes:
+     */
+    Route::apiResource('messages', MessageController::class);
+
+
+
+
+    // PropertyImageController Routes
+    /**
+     * GET /property-images - index
+     * POST /property-images - store
+     * GET /property-images/{propertyImage} - show
+     * PUT /property-images/{propertyImage} - update
+     * DELETE /property-images/{propertyImage} - destroy
+     * This single line of code handles all these CRUD routes:
+     */
+    Route::apiResource('property-images', PropertyImageController::class);
+
+
+
     
     // UtilityController Routes
     // Custom route to get global search results
@@ -67,6 +103,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('/', function () {
         echo "test";
     });
+
+    // PropertyController Routes
+    Route::get('/properties', [PropertyController::class, 'index']);
+    Route::get('/properties/{property}', [PropertyController::class, 'show']);
 
     /**
      * AuthController Routes
