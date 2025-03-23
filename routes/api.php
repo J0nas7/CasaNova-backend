@@ -35,6 +35,10 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
      * This single line of code handles all these CRUD routes:
      */
     Route::apiResource('properties', PropertyController::class);
+    // Custom routes to get properties by user ID and price range
+    Route::get('/properties/user/{userId}', [PropertyController::class, 'getPropertiesByUser']);
+    // Custom route to get properties by price range
+    Route::get('/properties/price-range/{minPrice}/{maxPrice}', [PropertyController::class, 'getPropertiesByPriceRange']);
 
 
 
@@ -48,6 +52,8 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
      * This single line of code handles all these CRUD routes:
      */
     Route::apiResource('favorites', FavoriteController::class);
+    // Custom route to remove a favorite by User_ID and Property_ID
+    Route::delete('/favorites/user/{userId}/property/{propertyId}', [FavoriteController::class, 'removeByUserAndProperty']);
     
     // UtilityController Routes
     // Custom route to get global search results

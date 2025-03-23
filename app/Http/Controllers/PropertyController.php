@@ -3,102 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
-class PropertyController extends Controller
+class PropertyController extends BaseController
 {
     /**
-     * Display a listing of properties.
+     * The model class associated with this controller.
      *
-     * @return JsonResponse
+     * @var string
      */
-    public function index(): JsonResponse
+    protected string $modelClass = Property::class;
+
+    /**
+     * The relationships to eager load when fetching properties.
+     *
+     * @var array
+     */
+    protected array $with = ['user', 'images', 'favorites'];
+
+    /**
+     * Define the validation rules for properties.
+     *
+     * @return array The validation rules.
+     */
+    protected function rules(): array
     {
-        $properties = Property::with(['user', 'images', 'favorites'])->get(); 
+        return [
+            'User_ID' => 'required|integer',
+            'Property_Title' => 'required|string|max:255',
+            'Property_Description' => 'nullable|string',
+            'Property_Price' => 'required|numeric',
+            'Property_Location' => 'required|string|max:255',
+        ];
+    }
+
+    /**
+     * Retrieve all properties belonging to a specific user.
+     *
+     * @param int $userId The ID of the user whose properties should be retrieved.
+     * @return JsonResponse A list of properties owned by the user.
+     */
+    public function getPropertiesByUser(int $userId): JsonResponse
+    {
+        // Fetch properties belonging to the given user ID and eager load relationships
+        $properties = Property::with($this->with)->where('User_ID', $userId)->get();
+
+        // If no properties found, return a 404 response
+        if ($properties->isEmpty()) {
+            return response()->json(['message' => 'No properties found for this user'], 404);
+        }
+
+        // Return the list of properties as a JSON response
         return response()->json($properties);
     }
 
     /**
-     * Store a newly created property in storage.
+     * Retrieve all properties within a specific price range.
      *
-     * @param Request $request
-     * @return JsonResponse
+     * @param float $minPrice The minimum price.
+     * @param float $maxPrice The maximum price.
+     * @return JsonResponse A list of properties within the price range.
      */
-    public function store(Request $request): JsonResponse
+    public function getPropertiesByPriceRange(float $minPrice, float $maxPrice): JsonResponse
     {
-        $validated = $request->validate([
-            'User_ID' => 'required|integer',
-            'Property_Title' => 'required|string|max:255',
-            'Property_Description' => 'nullable|string',
-            'Property_Price' => 'required|numeric',
-            'Property_Location' => 'required|string|max:255',
-        ]);
+        // Fetch properties that fall within the specified price range
+        $properties = Property::with($this->with)
+            ->whereBetween('Property_Price', [$minPrice, $maxPrice])
+            ->get();
 
-        $property = Property::create($validated);
-        return response()->json($property, 201);
-    }
-
-    /**
-     * Display the specified property.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function show(int $id): JsonResponse
-    {
-        $property = Property::with(['user', 'images', 'favorites'])->find($id);
-
-        if (!$property) {
-            return response()->json(['message' => 'Property not found'], 404);
+        // If no properties found, return a 404 response
+        if ($properties->isEmpty()) {
+            return response()->json(['message' => 'No properties found in this price range'], 404);
         }
 
-        return response()->json($property);
-    }
-
-    /**
-     * Update the specified property in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function update(Request $request, int $id): JsonResponse
-    {
-        $validated = $request->validate([
-            'User_ID' => 'required|integer',
-            'Property_Title' => 'required|string|max:255',
-            'Property_Description' => 'nullable|string',
-            'Property_Price' => 'required|numeric',
-            'Property_Location' => 'required|string|max:255',
-        ]);
-
-        $property = Property::find($id);
-
-        if (!$property) {
-            return response()->json(['message' => 'Property not found'], 404);
-        }
-
-        $property->update($validated);
-        return response()->json($property);
-    }
-
-    /**
-     * Remove the specified property from storage.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function destroy(int $id): JsonResponse
-    {
-        $property = Property::find($id);
-
-        if (!$property) {
-            return response()->json(['message' => 'Property not found'], 404);
-        }
-
-        $property->delete();
-        return response()->json(['message' => 'Property deleted successfully.']);
+        // Return the list of properties as a JSON response
+        return response()->json($properties);
     }
 }
 ?>
