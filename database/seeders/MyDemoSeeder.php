@@ -75,8 +75,10 @@ class MyDemoSeeder extends Seeder
                     'Property_Title'        => $faker->sentence(3),
                     'Property_Description'  => $faker->paragraph(),
                     'Property_Address'      => $faker->address,
+                    'Property_Latitude'     => $faker->latitude(24.396308, 49.384358), // Latitude range for the USA
+                    'Property_Longitude'    => $faker->longitude(-125.0, -66.93457), // Longitude range for the USA
                     'Property_City'         => $cities[array_rand($cities)], // Randomly assign a city
-                    'Property_State'        => 'State Placeholder', // Add appropriate state logic if needed
+                    'Property_State'        => $faker->state, // Use Faker to generate a random state
                     'Property_Zip_Code'     => rand(10000, 99999), // Random zip code
                     'Property_Price_Per_Month' => rand(1000, 5000), // Random price between $1000-$5000
                     'Property_Num_Bedrooms' => rand(1, 5), // Random number of bedrooms

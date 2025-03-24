@@ -35,6 +35,8 @@ class CreateCasaNovaTables extends Migration
             $table->string($prefix . 'Title', 255); // Property title
             $table->text($prefix . 'Description')->nullable(); // Property description
             $table->string($prefix . 'Address', 500);
+            $table->integer($prefix . 'Latitude');
+            $table->integer($prefix . 'Longitude');
             $table->string($prefix . 'City', 255);
             $table->string($prefix . 'State', 255);
             $table->string($prefix . 'Zip_Code', 20);

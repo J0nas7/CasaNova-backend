@@ -30,11 +30,24 @@ class PropertyController extends BaseController
     protected function rules(): array
     {
         return [
-            'User_ID' => 'required|integer',
+            'User_ID' => 'required|integer|exists:CN_Users,User_ID', // Ensure the user exists
             'Property_Title' => 'required|string|max:255',
             'Property_Description' => 'nullable|string',
-            'Property_Price' => 'required|numeric',
-            'Property_Location' => 'required|string|max:255',
+            'Property_Address' => 'required|string|max:500',
+            'Property_Latitude' => 'required|integer',
+            'Property_Longitude' => 'required|integer',
+            'Property_City' => 'required|string|max:255',
+            'Property_State' => 'required|string|max:255',
+            'Property_Zip_Code' => 'required|string|max:20',
+            'Property_Price_Per_Month' => 'required|numeric|min:0',
+            'Property_Num_Bedrooms' => 'required|integer|min:1',
+            'Property_Num_Bathrooms' => 'required|integer|min:1',
+            'Property_Square_Feet' => 'required|integer|min:0',
+            'Property_Amenities' => 'nullable|array', // Should be an array if provided
+            'Property_Property_Type' => 'required|string|max:50', // Validate property type
+            'Property_Available_From' => 'nullable|date', // Optional date
+            'Property_Available_To' => 'nullable|date', // Optional date
+            'Property_Is_Active' => 'required|boolean', // Ensure it’s a boolean value (true/false)
         ];
     }
 
@@ -81,4 +94,3 @@ class PropertyController extends BaseController
         return response()->json($properties);
     }
 }
-?>
