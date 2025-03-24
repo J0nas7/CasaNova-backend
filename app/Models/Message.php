@@ -31,5 +31,10 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'Receiver_ID');
     }
+
+    public function property()
+    {
+        return $this->belongsTo(Property::class, 'Property_ID');
+    }
 }
 ?>

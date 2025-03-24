@@ -73,6 +73,8 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
      * This single line of code handles all these CRUD routes:
      */
     Route::apiResource('messages', MessageController::class);
+    // Custom route to get messages by user ID
+    Route::get('/users/{userId}/messages', [MessageController::class, 'getMessagesByUserId']);
 
 
 

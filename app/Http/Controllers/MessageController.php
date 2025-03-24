@@ -20,7 +20,7 @@ class MessageController extends BaseController
      *
      * @var array
      */
-    protected array $with = ['sender', 'receiver'];
+    protected array $with = ['sender', 'receiver', 'property', 'property.images', 'property.user'];
 
     /**
      * Define the validation rules for messages.
@@ -34,4 +34,23 @@ class MessageController extends BaseController
             'Receiver_ID' => 'required|integer|exists:CN_Users,User_ID'
         ];
     }
+
+    /**
+     * Retrieve messages for a specific user.
+     *
+     * @param int $userId
+     * @return JsonResponse
+     */
+    public function getMessagesByUserId(int $userId): JsonResponse
+    {
+        // Fetch messages where the user is either the sender or receiver
+        $messages = Message::with($this->with)
+            ->where('Sender_ID', $userId)
+            ->orWhere('Receiver_ID', $userId)
+            ->orderByDesc('Message_CreatedAt')
+            ->get();
+
+        return response()->json($messages);
+    }
 }
+?>

@@ -123,7 +123,7 @@ class MyDemoSeeder extends Seeder
             'https://images.pexels.com/photos/1457847/pexels-photo-1457847.jpeg?auto=compress&cs=tinysrgb&w=1200',
             'https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg?auto=compress&cs=tinysrgb&w=1200',
             'https://images.pexels.com/photos/210265/pexels-photo-210265.jpeg?auto=compress&cs=tinysrgb&w=1200'
-        ];        
+        ];
 
         // Array to track already assigned featured images
         $usedFeaturedImages = [];
@@ -150,7 +150,7 @@ class MyDemoSeeder extends Seeder
 
             // Select up to 2 non-featured images (interiors)
             $selectedInteriorImages = array_slice($interiorImages, 0, 2);
-            
+
             foreach ($selectedInteriorImages as $imageUrl) {
                 PropertyImage::create([
                     'Property_ID'      => $property->Property_ID,
@@ -161,7 +161,7 @@ class MyDemoSeeder extends Seeder
         }
 
         // Create Messages (between landlords & tenants)
-        foreach ($tenants as $tenant) {
+        /*foreach ($tenants as $tenant) {
             foreach ($properties as $property) {
                 if (rand(0, 1)) { // Randomly assign messages
                     Message::create([
@@ -175,6 +175,64 @@ class MyDemoSeeder extends Seeder
                     ]);
                 }
             }
+        }*/
+
+        // More natural conversation between admin and landlords
+        foreach ($properties as $property) {
+            // Admin sends initial inquiry
+            Message::create([
+                'Sender_ID'    => $admin->User_ID,
+                'Receiver_ID'  => $property->User_ID,
+                'Property_ID'  => $property->Property_ID,
+                'Message_Message_Text' => "Hello, I'm interested in {$property->Property_Title}. Is it still available?",
+                'Message_Sent_At' => now(),
+                'Message_CreatedAt'    => now(),
+                'Message_UpdatedAt'    => now(),
+            ]);
+
+            // Property owner responds
+            Message::create([
+                'Sender_ID'    => $property->User_ID,
+                'Receiver_ID'  => $admin->User_ID,
+                'Property_ID'  => $property->Property_ID,
+                'Message_Message_Text' => "Hi! Yes, it's available. Would you like to schedule a viewing?",
+                'Message_Sent_At' => now()->addMinutes(2),
+                'Message_CreatedAt'    => now()->addMinutes(2),
+                'Message_UpdatedAt'    => now()->addMinutes(2),
+            ]);
+
+            // Admin replies
+            Message::create([
+                'Sender_ID'    => $admin->User_ID,
+                'Receiver_ID'  => $property->User_ID,
+                'Property_ID'  => $property->Property_ID,
+                'Message_Message_Text' => "That sounds great! I'm available this weekend. Does that work for you?",
+                'Message_Sent_At' => now()->addMinutes(5),
+                'Message_CreatedAt'    => now()->addMinutes(5),
+                'Message_UpdatedAt'    => now()->addMinutes(5),
+            ]);
+
+            // Property owner confirms
+            Message::create([
+                'Sender_ID'    => $property->User_ID,
+                'Receiver_ID'  => $admin->User_ID,
+                'Property_ID'  => $property->Property_ID,
+                'Message_Message_Text' => "Yes, this weekend works! I’ll send you the address and details shortly.",
+                'Message_Sent_At' => now()->addMinutes(7),
+                'Message_CreatedAt'    => now()->addMinutes(7),
+                'Message_UpdatedAt'    => now()->addMinutes(7),
+            ]);
+
+            // Admin thanks the owner
+            Message::create([
+                'Sender_ID'    => $admin->User_ID,
+                'Receiver_ID'  => $property->User_ID,
+                'Property_ID'  => $property->Property_ID,
+                'Message_Message_Text' => "Perfect! Looking forward to it. Thanks!",
+                'Message_Sent_At' => now()->addMinutes(10),
+                'Message_CreatedAt'    => now()->addMinutes(10),
+                'Message_UpdatedAt'    => now()->addMinutes(10),
+            ]);
         }
 
         // Create Favorite Listings
