@@ -22,7 +22,7 @@ class Property extends Model
         'Property_Latitude', 
         'Property_Longitude', 
         'Property_City', 
-        'Property_State', 
+        // 'Property_State', 
         'Property_Zip_Code', 
         'Property_Price_Per_Month', 
         'Property_Num_Bedrooms', 

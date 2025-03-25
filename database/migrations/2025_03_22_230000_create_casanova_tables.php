@@ -38,8 +38,8 @@ class CreateCasaNovaTables extends Migration
             $table->integer($prefix . 'Latitude');
             $table->integer($prefix . 'Longitude');
             $table->string($prefix . 'City', 255);
-            $table->string($prefix . 'State', 255);
-            $table->string($prefix . 'Zip_Code', 20);
+            // $table->string($prefix . 'State', 255);
+            $table->integer($prefix . 'Zip_Code');
             $table->decimal($prefix . 'Price_Per_Month', 10, 2); // Monthly price
             $table->integer($prefix . 'Num_Bedrooms');
             $table->integer($prefix . 'Num_Bathrooms');
@@ -58,11 +58,13 @@ class CreateCasaNovaTables extends Migration
         // Property Images table
         Schema::create('CN_Property_Images', function (Blueprint $table) {
             $prefix = 'Image_';
-
+            
             $table->bigIncrements($prefix . 'ID'); // Primary key
             $table->bigInteger('Property_ID')->unsigned(); // Foreign key to CN_Properties
-            $table->string($prefix . 'Image_URL', 512); // Image URL
-            $table->text($prefix . 'Image_Description')->nullable(); // Optional image description
+            $table->string($prefix . 'Name', 255)->nullable(); // File name
+            $table->string($prefix . 'Path', 512)->nullable(); // Storage path
+            $table->string($prefix . 'Type', 100)->nullable(); // File type (image, video, etc.)
+            $table->string($prefix . 'URL', 512)->nullable(); // Image URL
             $table->boolean($prefix . 'Is_Featured')->default(false); // Mark the featured image
 
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields

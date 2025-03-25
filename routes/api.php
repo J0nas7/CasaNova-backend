@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
     Route::get('/properties/user/{userId}', [PropertyController::class, 'getPropertiesByUser']);
     // Custom route to get properties by price range
     Route::get('/properties/price-range/{minPrice}/{maxPrice}', [PropertyController::class, 'getPropertiesByPriceRange']);
+    // Custom route to create a property with images
+    Route::post('/createPropertyWithImages', [PropertyController::class, 'createPropertyWithImages']);
 
 
 

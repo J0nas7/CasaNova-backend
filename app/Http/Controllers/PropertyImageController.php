@@ -31,7 +31,12 @@ class PropertyImageController extends BaseController
     {
         return [
             'Property_ID' => 'required|integer|exists:CN_Properties,Property_ID',
-            'Image_URL' => 'required|string|max:255',
+            'Image_Name' => 'nullable|string|max:255',
+            'Image_Path' => 'nullable|string|max:512',
+            'Image_Type' => 'nullable|string|max:100',
+            'Image_URL' => 'nullable|string|max:512',
+            'Image_Is_Featured' => 'nullable|boolean',
+            'image' => 'required|file|mimes:jpg,jpeg,png|max:20480', // Validate a single image (max 20MB)
         ];
     }
 
@@ -57,4 +62,3 @@ class PropertyImageController extends BaseController
         return response()->json($images);
     }
 }
-?>
