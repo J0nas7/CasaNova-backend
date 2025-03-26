@@ -38,14 +38,16 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
      */
     //Route::apiResource('properties', PropertyController::class);
     Route::post('/properties', [PropertyController::class, 'store']);
-    Route::put('/properties/{property}', [PropertyController::class, 'update']);
+    // Route::post('/properties/{id}', [PropertyController::class, 'update']);
     Route::delete('/properties/{property}', [PropertyController::class, 'destroy']);
     // Custom routes to get properties by user ID and price range
-    Route::get('/properties/user/{userId}', [PropertyController::class, 'getPropertiesByUser']);
+    Route::get('/users/{userId}/properties', [PropertyController::class, 'getPropertiesByUser']);
     // Custom route to get properties by price range
     Route::get('/properties/price-range/{minPrice}/{maxPrice}', [PropertyController::class, 'getPropertiesByPriceRange']);
     // Custom route to create a property with images
     Route::post('/createPropertyWithImages', [PropertyController::class, 'createPropertyWithImages']);
+    // Custom route to update a property with images
+    Route::post('/updatePropertyWithImages/{propertyId}', [PropertyController::class, 'updatePropertyWithImages']);
 
 
 
