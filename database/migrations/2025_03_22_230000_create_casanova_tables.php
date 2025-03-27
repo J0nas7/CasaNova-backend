@@ -65,7 +65,7 @@ class CreateCasaNovaTables extends Migration
             $table->string($prefix . 'Path', 512)->nullable(); // Storage path
             $table->string($prefix . 'Type', 100)->nullable(); // File type (image, video, etc.)
             $table->string($prefix . 'URL', 512)->nullable(); // Image URL
-            $table->boolean($prefix . 'Is_Featured')->default(false); // Mark the featured image
+            $table->integer($prefix . 'Order'); // Image Order
 
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 

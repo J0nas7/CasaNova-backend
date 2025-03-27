@@ -146,18 +146,19 @@ class MyDemoSeeder extends Seeder
             // Create the featured property image
             PropertyImage::create([
                 'Property_ID'      => $property->Property_ID,
-                'Image_URL'  => $featuredImage,
-                'Image_Is_Featured' => true,
+                'Image_URL'        => $featuredImage,
+                'Image_Order'      => 1
             ]);
 
             // Select up to 2 non-featured images (interiors)
             $selectedInteriorImages = array_slice($interiorImages, 0, 2);
-
+            
+            $imageOrder = 2; // Start with 2 since 1 is for the featured image
             foreach ($selectedInteriorImages as $imageUrl) {
                 PropertyImage::create([
                     'Property_ID'      => $property->Property_ID,
-                    'Image_URL'  => $imageUrl,
-                    'Image_Is_Featured' => false,
+                    'Image_URL'        => $imageUrl,
+                    'Image_Order'      => $imageOrder++
                 ]);
             }
         }

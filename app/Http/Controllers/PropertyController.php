@@ -137,6 +137,7 @@ class PropertyController extends BaseController
                         'Property_ID' => $property->Property_ID,
                         'Image_Name' => $fileName,
                         'Image_Path' => $filePath,
+                        'Image_Order' => count($imageData) + 1,
                         'Image_Type' => $image->getClientOriginalExtension(), // Store the file extension (JPG, PNG)
                         'Image_CreatedAt' => now(),
                         'Image_UpdatedAt' => now()
@@ -190,42 +191,66 @@ class PropertyController extends BaseController
             $property->update($validated);
 
             // Handle image uploads if files are provided
-            if ($request->hasFile('images')) {
-                // Delete existing images for the property
-                PropertyImage::where('Property_ID', $propertyId)->delete();
+            if ($request->has('images')) {
+                // Extract paths from the provided images array
+                $providedPaths = collect($request->input('images'))
+                    ->filter(fn($image) => is_string($image)) // Only keep string paths
+                    ->toArray();
+
+                // Delete existing images for the property that are not in the provided paths
+                PropertyImage::where('Property_ID', $propertyId)
+                    ->whereNotIn('Image_Path', $providedPaths)
+                    ->delete();
 
                 $imageData = [];
+                // return response()->json(['requestImages' => $request->input('images')]);
                 foreach ($request->file('images') as $image) {
-                    // Generate a unique file name
-                    $fileName = time() . '-' . $image->getClientOriginalName();
+                    if ($image instanceof \Illuminate\Http\UploadedFile) {
+                        // Generate a unique file name
+                        $fileName = time() . '-' . $image->getClientOriginalName();
 
-                    // Store the image in 'public/listings' directory and get the path
-                    $filePath = $image->storeAs('listings', $fileName, 'public');
+                        // Store the image in 'public/listings' directory and get the path
+                        $filePath = $image->storeAs('listings', $fileName, 'public');
 
-                    // Prepare data for batch insert
-                    $imageData[] = [
-                        'Property_ID' => $property->Property_ID,
-                        'Image_Name' => $fileName,
-                        'Image_Path' => $filePath,
-                        'Image_Type' => $image->getClientOriginalExtension(), // Store the file extension (JPG, PNG)
-                        'Image_CreatedAt' => now(),
-                        'Image_UpdatedAt' => now()
-                    ];
+                        // Prepare data for batch insert
+                        $imageData[] = [
+                            'Property_ID' => $property->Property_ID,
+                            'Image_Name' => $fileName,
+                            'Image_Path' => $filePath,
+                            'Image_Order' => count($imageData) + 1,
+                            'Image_Type' => $image->getClientOriginalExtension(), // Store the file extension (JPG, PNG)
+                            'Image_CreatedAt' => now(),
+                            'Image_UpdatedAt' => now()
+                        ];
+                    }
                 }
 
                 // Insert new images into database
                 PropertyImage::insert($imageData);
+
+                // // Incrementally update Image_Order for all images
+                $propertyImages = PropertyImage::where('Property_ID', $propertyId)->get();
+                if ($propertyImages->isNotEmpty()) {
+                    foreach ($propertyImages as $index => $image) {
+                        $image->update(['Image_Order' => $index + 1]);
+                    }
+                }
             }
 
             DB::commit(); // Commit transaction
 
             return response()->json([
                 'message' => 'Property updated successfully',
-                'property' => $property->load('images')
+                'property' => $property->load('images'),
+                'has' => $request->has('images'),
+                'input' => $request->input('images'),
+                'file' => $request->file('images')
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction if an error occurs
-            return response()->json(['error' => 'Failed to update property', 'details' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Failed to update property', 'details' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -269,7 +294,27 @@ class PropertyController extends BaseController
         // Validate request data
         return $request->validate(array_merge($this->rules(), [
             'images' => 'nullable',
-            'images.*' => 'file|mimes:jpg,jpeg,png|max:20480', // 20MB in kilobytes
+            // 'images.*' => 'file|max:20480|mimes:jpg,jpeg,png',
+            'images.*' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value) && !$value instanceof \Illuminate\Http\UploadedFile) {
+                        $fail('Each image must be either a valid file or a string URL.');
+                    }
+                },
+                function ($attribute, $value, $fail) {
+                    if (is_string($value)) {
+                        return; // Skip further validation if it's a string
+                    }
+                    if ($value->getSize() > 20480 * 1024) { // 20MB in bytes
+                        $fail('The file size must not exceed 20MB.');
+                    }
+                    $allowedMimes = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+                    if (!in_array($value->getClientOriginalExtension(), $allowedMimes)) {
+                        $fail('The file must be a type of: jpg, jpeg, png.');
+                    }
+                },
+            ],
         ]));
     }
 }

@@ -35,7 +35,7 @@ class PropertyImageController extends BaseController
             'Image_Path' => 'nullable|string|max:512',
             'Image_Type' => 'nullable|string|max:100',
             'Image_URL' => 'nullable|string|max:512',
-            'Image_Is_Featured' => 'nullable|boolean',
+            'Image_Order' => 'nullable|integer',
             'image' => 'required|file|mimes:jpg,jpeg,png|max:20480', // Validate a single image (max 20MB)
         ];
     }

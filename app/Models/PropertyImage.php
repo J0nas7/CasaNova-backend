@@ -19,7 +19,7 @@ class PropertyImage extends Model
         'Image_Path',
         'Image_Type',
         'Image_URL',
-        'Image_Is_Featured'
+        'Image_Order',
     ];
 
     protected $dates = ['Image_CreatedAt', 'Image_UpdatedAt', 'Image_DeletedAt'];
