@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\PropertyImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PropertyController extends BaseController
@@ -22,7 +23,7 @@ class PropertyController extends BaseController
      *
      * @var array
      */
-    protected array $with = ['user', 'images', 'favorites'];
+    protected array $with = [];
 
     /**
      * Define the validation rules for properties.
@@ -51,6 +52,57 @@ class PropertyController extends BaseController
             // 'Property_Available_To' => 'nullable|date', // Optional date
             'Property_Is_Active' => 'required|boolean', // Ensure it’s a boolean value (true/false)
         ];
+    }
+
+    // OVERRIDE of the BaseController methods
+    public function index(): JsonResponse
+    {
+        $authUser = Auth::guard('api')->user();
+
+        // Modify the eager-loaded relationships dynamically
+        $with = [
+            'user',
+            'images',
+            'favorites',
+            'messages' => function ($query) use ($authUser) {
+                if ($authUser) {
+                    // Only load messages for the authenticated user
+                    $query->where('Receiver_ID', $authUser->User_ID)
+                        ->orWhere('Sender_ID', $authUser->User_ID);
+                }
+            }
+        ];
+
+        // Retrieve all properties with the modified eager loading
+        $properties = $this->modelClass::with($with)->get();
+
+        // Return the properties as a JSON response
+        return response()->json($properties);
+    }
+    
+    public function show(int $id): JsonResponse
+    {
+        $with = [
+            'user',
+            'images',
+            'favorites',
+            'messages' => function ($query) {
+                $authUser = Auth::guard('api')->user();
+                if ($authUser) {
+                    // Only load messages for the authenticated user
+                    $query->where('Receiver_ID', $authUser->User_ID)
+                        ->orWhere('Sender_ID', $authUser->User_ID);
+                }
+            }
+        ];
+
+        $property = $this->modelClass::with($with)->find($id);
+
+        if (!$property) {
+            return response()->json(['message' => 'Property not found'], 404);
+        }
+
+        return response()->json($property);
     }
 
     /**
@@ -191,6 +243,7 @@ class PropertyController extends BaseController
             $property->update($validated);
 
             // Handle image uploads if files are provided
+            $newOrder = [];
             if ($request->has('images')) {
                 // Extract paths from the provided images array
                 $providedPaths = collect($request->input('images'))
@@ -203,36 +256,42 @@ class PropertyController extends BaseController
                     ->delete();
 
                 $imageData = [];
-                // return response()->json(['requestImages' => $request->input('images')]);
-                foreach ($request->file('images') as $image) {
-                    if ($image instanceof \Illuminate\Http\UploadedFile) {
-                        // Generate a unique file name
-                        $fileName = time() . '-' . $image->getClientOriginalName();
 
-                        // Store the image in 'public/listings' directory and get the path
-                        $filePath = $image->storeAs('listings', $fileName, 'public');
+                if ($request->file('images')) {
+                    foreach ($request->file('images') as $image) {
+                        if ($image instanceof \Illuminate\Http\UploadedFile) {
+                            // Generate a unique file name
+                            $fileName = time() . '-' . $image->getClientOriginalName();
 
-                        // Prepare data for batch insert
-                        $imageData[] = [
-                            'Property_ID' => $property->Property_ID,
-                            'Image_Name' => $fileName,
-                            'Image_Path' => $filePath,
-                            'Image_Order' => count($imageData) + 1,
-                            'Image_Type' => $image->getClientOriginalExtension(), // Store the file extension (JPG, PNG)
-                            'Image_CreatedAt' => now(),
-                            'Image_UpdatedAt' => now()
-                        ];
+                            // Store the image in 'public/listings' directory and get the path
+                            $filePath = $image->storeAs('listings', $fileName, 'public');
+
+                            // Prepare data for batch insert
+                            $imageData[] = [
+                                'Property_ID' => $property->Property_ID,
+                                'Image_Name' => $fileName,
+                                'Image_Path' => $filePath,
+                                'Image_Order' => count($imageData) + 1,
+                                'Image_Type' => $image->getClientOriginalExtension(), // Store the file extension (JPG, PNG)
+                                'Image_CreatedAt' => now(),
+                                'Image_UpdatedAt' => now()
+                            ];
+                        }
                     }
                 }
 
                 // Insert new images into database
                 PropertyImage::insert($imageData);
 
-                // // Incrementally update Image_Order for all images
-                $propertyImages = PropertyImage::where('Property_ID', $propertyId)->get();
-                if ($propertyImages->isNotEmpty()) {
-                    foreach ($propertyImages as $index => $image) {
-                        $image->update(['Image_Order' => $index + 1]);
+                // Incrementally update Image_Order for all images
+                if ($request->input('images')) {
+                    foreach ($request->input('images') as $index => $imagePath) {
+                        if (is_string($imagePath)) {
+                            PropertyImage::where('Property_ID', $propertyId)
+                                ->where('Image_Path', $imagePath)
+                                ->update(['Image_Order' => $index + 1]);
+                            $newOrder[] = $imagePath;
+                        }
                     }
                 }
             }
@@ -244,12 +303,14 @@ class PropertyController extends BaseController
                 'property' => $property->load('images'),
                 'has' => $request->has('images'),
                 'input' => $request->input('images'),
-                'file' => $request->file('images')
+                'file' => $request->file('images'),
+                'newOrder' => $newOrder,
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction if an error occurs
             return response()->json([
-                'error' => 'Failed to update property', 'details' => $e->getMessage()
+                'error' => 'Failed to update property',
+                'details' => $e->getMessage()
             ], 500);
         }
     }

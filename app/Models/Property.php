@@ -58,6 +58,11 @@ class Property extends Model
     {
         return $this->hasMany(PropertyImage::class, 'Property_ID');
     }
+    
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'Property_ID');
+    }
 
     public function favorites()
     {

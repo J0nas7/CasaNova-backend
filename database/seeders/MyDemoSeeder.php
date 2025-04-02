@@ -171,8 +171,7 @@ class MyDemoSeeder extends Seeder
                         'Sender_ID'    => $tenant->User_ID,
                         'Receiver_ID'  => $property->User_ID,
                         'Property_ID'  => $property->Property_ID,
-                        'Message_Message_Text' => "Hello, I'm interested in {$property->Property_Title}. Is it available?",
-                        'Message_Sent_At' => now(),
+                        'Message_Text' => "Hello, I'm interested in {$property->Property_Title}. Is it available?",
                         'Message_CreatedAt'    => now(),
                         'Message_UpdatedAt'    => now(),
                     ]);
@@ -182,13 +181,16 @@ class MyDemoSeeder extends Seeder
 
         // More natural conversation between admin and landlords
         foreach ($properties as $property) {
+            if ($property->Property_ID % 2 == 0) { // Only for odd Property_IDs
+                continue; // Skip even Property_IDs
+            }
+
             // Admin sends initial inquiry
             Message::create([
                 'Sender_ID'    => $admin->User_ID,
                 'Receiver_ID'  => $property->User_ID,
                 'Property_ID'  => $property->Property_ID,
-                'Message_Message_Text' => "Hello, I'm interested in {$property->Property_Title}. Is it still available?",
-                'Message_Sent_At' => now(),
+                'Message_Text' => "Hello, I'm interested in {$property->Property_Title}. Is it still available?",
                 'Message_CreatedAt'    => now(),
                 'Message_UpdatedAt'    => now(),
             ]);
@@ -198,8 +200,7 @@ class MyDemoSeeder extends Seeder
                 'Sender_ID'    => $property->User_ID,
                 'Receiver_ID'  => $admin->User_ID,
                 'Property_ID'  => $property->Property_ID,
-                'Message_Message_Text' => "Hi! Yes, it's available. Would you like to schedule a viewing?",
-                'Message_Sent_At' => now()->addMinutes(2),
+                'Message_Text' => "Hi! Yes, it's available. Would you like to schedule a viewing?",
                 'Message_CreatedAt'    => now()->addMinutes(2),
                 'Message_UpdatedAt'    => now()->addMinutes(2),
             ]);
@@ -209,8 +210,7 @@ class MyDemoSeeder extends Seeder
                 'Sender_ID'    => $admin->User_ID,
                 'Receiver_ID'  => $property->User_ID,
                 'Property_ID'  => $property->Property_ID,
-                'Message_Message_Text' => "That sounds great! I'm available this weekend. Does that work for you?",
-                'Message_Sent_At' => now()->addMinutes(5),
+                'Message_Text' => "That sounds great! I'm available this weekend. Does that work for you?",
                 'Message_CreatedAt'    => now()->addMinutes(5),
                 'Message_UpdatedAt'    => now()->addMinutes(5),
             ]);
@@ -220,8 +220,7 @@ class MyDemoSeeder extends Seeder
                 'Sender_ID'    => $property->User_ID,
                 'Receiver_ID'  => $admin->User_ID,
                 'Property_ID'  => $property->Property_ID,
-                'Message_Message_Text' => "Yes, this weekend works! I’ll send you the address and details shortly.",
-                'Message_Sent_At' => now()->addMinutes(7),
+                'Message_Text' => "Yes, this weekend works! I’ll send you the address and details shortly.",
                 'Message_CreatedAt'    => now()->addMinutes(7),
                 'Message_UpdatedAt'    => now()->addMinutes(7),
             ]);
@@ -231,8 +230,7 @@ class MyDemoSeeder extends Seeder
                 'Sender_ID'    => $admin->User_ID,
                 'Receiver_ID'  => $property->User_ID,
                 'Property_ID'  => $property->Property_ID,
-                'Message_Message_Text' => "Perfect! Looking forward to it. Thanks!",
-                'Message_Sent_At' => now()->addMinutes(10),
+                'Message_Text' => "Perfect! Looking forward to it. Thanks!",
                 'Message_CreatedAt'    => now()->addMinutes(10),
                 'Message_UpdatedAt'    => now()->addMinutes(10),
             ]);

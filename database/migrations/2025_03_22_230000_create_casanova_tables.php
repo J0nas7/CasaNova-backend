@@ -80,8 +80,7 @@ class CreateCasaNovaTables extends Migration
             $table->bigInteger('Sender_ID')->unsigned(); // Foreign key to CN_Users (sender)
             $table->bigInteger('Receiver_ID')->unsigned(); // Foreign key to CN_Users (receiver)
             $table->bigInteger('Property_ID')->unsigned(); // Foreign key to CN_Properties (property)
-            $table->text($prefix . 'Message_Text'); // Message content
-            $table->timestamp($prefix . 'Sent_At'); // Sent timestamp
+            $table->text($prefix . 'Text'); // Message content
             $table->timestamp($prefix . 'Read_At')->nullable(); // Read timestamp (nullable)
 
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields

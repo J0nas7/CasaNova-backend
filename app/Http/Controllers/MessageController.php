@@ -31,7 +31,9 @@ class MessageController extends BaseController
     {
         return [
             'Sender_ID' => 'required|integer|exists:CN_Users,User_ID',
-            'Receiver_ID' => 'required|integer|exists:CN_Users,User_ID'
+            'Receiver_ID' => 'required|integer|exists:CN_Users,User_ID',
+            'Property_ID' => 'required|integer|exists:CN_Properties,Property_ID',
+            'Message_Text' => 'required|string'
         ];
     }
 

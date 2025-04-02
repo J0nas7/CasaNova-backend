@@ -14,7 +14,7 @@ class Message extends Model
     protected $primaryKey = 'Message_ID';
 
     protected $fillable = [
-        'Sender_ID', 'Receiver_ID', 'Message_Text', 'Message_Status'
+        'Sender_ID', 'Receiver_ID', 'Property_ID', 'Message_Text', 'Message_Status'
     ];
 
     protected $dates = ['Message_CreatedAt', 'Message_UpdatedAt', 'Message_DeletedAt'];
