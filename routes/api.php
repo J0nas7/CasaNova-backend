@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth:api', UserOnly::class]], function () {
     Route::post('/createPropertyWithImages', [PropertyController::class, 'createPropertyWithImages']);
     // Custom route to update a property with images
     Route::post('/updatePropertyWithImages/{propertyId}', [PropertyController::class, 'updatePropertyWithImages']);
+    // Custom route to update property availability
+    Route::put('/properties/{propertyId}/availability', [PropertyController::class, 'updatePropertyAvailability']);
 
 
 

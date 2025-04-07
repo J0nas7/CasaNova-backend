@@ -23,7 +23,10 @@ class PropertyController extends BaseController
      *
      * @var array
      */
-    protected array $with = [];
+    protected array $with = [
+        'user',
+        'images'
+    ];
 
     /**
      * Define the validation rules for properties.
@@ -73,8 +76,10 @@ class PropertyController extends BaseController
             }
         ];
 
-        // Retrieve all properties with the modified eager loading
-        $properties = $this->modelClass::with($with)->get();
+        // Retrieve all properties with the modified eager loading where Property_Is_Active is true
+        $properties = $this->modelClass::with($with)
+            ->where('Property_Is_Active', true)
+            ->get();
 
         // Return the properties as a JSON response
         return response()->json($properties);
@@ -103,6 +108,42 @@ class PropertyController extends BaseController
         }
 
         return response()->json($property);
+    }
+
+    // Custom methods for PropertyController
+    /**
+     * Update the availability details of a property.
+     *
+     * This method validates the incoming request data, retrieves the property
+     * by its ID, and updates its availability information. The availability
+     * includes the date range when the property is available and its active status.
+     *
+     * @param \Illuminate\Http\Request $request The incoming HTTP request containing the property availability data.
+     * @param int $propertyId The ID of the property to be updated.
+     * @return \Illuminate\Http\JsonResponse A JSON response indicating the success of the update operation.
+     *
+     * @throws \Illuminate\Validation\ValidationException If the request data fails validation.
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the property with the given ID is not found.
+     */
+    public function updatePropertyAvailability(Request $request, int $propertyId): JsonResponse
+    {
+        // Validate the request data
+        $validated = $request->validate([
+            'Property_Available_From' => 'nullable|date',
+            'Property_Available_To' => 'nullable|date',
+            'Property_Is_Active' => 'required|boolean',
+        ]);
+
+        // Find the property by ID
+        $property = Property::findOrFail($propertyId);
+
+        // Update the property availability
+        $property->update($validated);
+
+        return response()->json([
+            'message' => 'Property updated successfully',
+            'property' => $property->load('images')
+        ], 200);
     }
 
     /**
