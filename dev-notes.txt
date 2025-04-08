@@ -1,6 +1,8 @@
 composer create-project laravel/laravel your-project-name
 
 php artisan serve --host=192.168.0.118 --port=8000
+lsof -i :8000
+kill -9 *PID*
 
 
 PHP ARTISAN:
