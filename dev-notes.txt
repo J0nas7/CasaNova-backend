@@ -1,9 +1,11 @@
 composer create-project laravel/laravel your-project-name
 
-php artisan serve --host=192.168.0.118 --port=8000
+php artisan serve --host=192.168.0.186 --port=8000
 lsof -i :8000
 kill -9 *PID*
 
+WordPress Login:
+J0nas7@CasaNova.demo / l0QoiUWG7JQRZ#gNxa
 
 PHP ARTISAN:
     DATABASE STUFF:
@@ -11,6 +13,9 @@ PHP ARTISAN:
         migrate:fresh
         ## Optional: Seed the Database
         migrate:fresh --seed
+        ## With WP tables in the same DB
+        migrate:reset --path=database/migrations
+        migrate --path=database/migrations --seed
         ## Runs a specific seeder class
         db:seed --class=GTSeeder
         

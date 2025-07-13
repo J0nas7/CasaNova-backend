@@ -40,8 +40,7 @@ class Property extends Model
         'Property_CreatedAt', 
         'Property_UpdatedAt', 
         'Property_DeletedAt', 
-        'Property_Available_From', 
-        'Property_Available_To'
+        'Property_Available_From'
     ];
 
     const CREATED_AT = 'Property_CreatedAt';

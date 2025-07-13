@@ -52,7 +52,7 @@ class PropertyController extends BaseController
             'Property_Amenities' => 'nullable|array', // Should be an array if provided
             'Property_Property_Type' => 'required|integer|max:50', // Validate property type
             // 'Property_Available_From' => 'nullable|date', // Optional date
-            // 'Property_Available_To' => 'nullable|date', // Optional date
+            // 'Property_Available_To' => 'nullable|string|max:50', // 3-6 months, 6-12 months, 1-2 years, 2+ years etc.
             'Property_Is_Active' => 'required|boolean', // Ensure it’s a boolean value (true/false)
         ];
     }
@@ -130,7 +130,7 @@ class PropertyController extends BaseController
         // Validate the request data
         $validated = $request->validate([
             'Property_Available_From' => 'nullable|date',
-            'Property_Available_To' => 'nullable|date',
+            'Property_Available_To' => 'nullable|string|max:50', // 3-6 months, 6-12 months, 1-2 years, 2+ years etc.
             'Property_Is_Active' => 'required|boolean',
         ]);
 

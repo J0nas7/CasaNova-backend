@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "clear-cache": "php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear",
+        "deploy": "gcloud config set project casanova-laravel-backend && gcloud app deploy app.yaml --version=0-1-0 --quiet"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

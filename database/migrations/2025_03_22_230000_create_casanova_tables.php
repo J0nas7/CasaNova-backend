@@ -47,7 +47,7 @@ class CreateCasaNovaTables extends Migration
             $table->json($prefix . 'Amenities')->nullable(); // List of amenities
             $table->string($prefix . 'Property_Type', 50); // Apartment, House, etc.
             $table->date($prefix . 'Available_From')->nullable();
-            $table->date($prefix . 'Available_To')->nullable();
+            $table->string($prefix . 'Available_To', 50); // 3-6 months, 6-12 months, 1-2 years, 2+ years etc.
             $table->boolean($prefix . 'Is_Active')->default(true); // Property availability
 
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields

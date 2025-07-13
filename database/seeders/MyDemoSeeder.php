@@ -12,15 +12,24 @@ use App\Models\Favorite;
 use App\Models\Notification;
 
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class MyDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::statement('PRAGMA foreign_keys = OFF'); // Important for SQLite
+        DB::table('CN_Users')->truncate();
+        DB::table('CN_Properties')->truncate();
+        DB::table('CN_Property_Images')->truncate();
+        DB::table('CN_Messages')->truncate();
+        DB::table('CN_Favorites')->truncate();
+        DB::statement('PRAGMA foreign_keys = ON');
+
         $faker = Faker::create();
 
         // Create Admin User
-        $admin = User::create([
+        $admin = User::firstOrCreate([
             'User_First_Name'  => 'Admin',
             'User_Last_Name'   => 'User',
             'User_Email'       => 'admin@casanova.com',
@@ -35,7 +44,7 @@ class MyDemoSeeder extends Seeder
         // Create Landlords
         $landlords = [];
         for ($i = 1; $i <= 3; $i++) {
-            $landlords[] = User::create([
+            $landlords[] = User::firstOrCreate([
                 'User_First_Name'  => "Landlord$i",
                 'User_Last_Name'   => "Lastname$i",
                 'User_Email'       => "landlord$i@casanova.com",
@@ -51,7 +60,7 @@ class MyDemoSeeder extends Seeder
         // Create Tenants
         $tenants = [];
         for ($i = 1; $i <= 5; $i++) {
-            $tenants[] = User::create([
+            $tenants[] = User::firstOrCreate([
                 'User_First_Name'  => "Tenant$i",
                 'User_Last_Name'   => "Lastname$i",
                 'User_Email'       => "tenant$i@casanova.com",
@@ -75,8 +84,8 @@ class MyDemoSeeder extends Seeder
                     'Property_Title'        => $faker->sentence(3),
                     'Property_Description'  => $faker->paragraph(),
                     'Property_Address'      => $faker->address,
-                    'Property_Latitude'     => $faker->latitude(24.396308, 49.384358), // Latitude range for the USA
-                    'Property_Longitude'    => $faker->longitude(-125.0, -66.93457), // Longitude range for the USA
+                    'Property_Latitude'     => $faker->latitude(54.5, 56.2), // Latitude range for Sjælland, Denmark
+                    'Property_Longitude'    => $faker->longitude(10.9, 12.8), // Longitude range for Sjælland, Denmark
                     'Property_City'         => $cities[array_rand($cities)], // Randomly assign a city
                     // 'Property_State'        => $faker->state, // Use Faker to generate a random state
                     'Property_Zip_Code'     => rand(10000, 99999), // Random zip code
@@ -87,6 +96,7 @@ class MyDemoSeeder extends Seeder
                     'Property_Amenities'    => json_encode(['Pool', 'Gym', 'Parking']), // Example amenities
                     'Property_Property_Type' => rand(1, 4), // Random property type
                     'Property_Available_From' => now()->addDays(rand(1, 30)), // Available in 1-30 days
+                    'Property_Available_To' => '12', // Available in x months
                     'Property_Is_Active'    => true,
                 ]);
             }
