@@ -18,12 +18,14 @@ return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
-        
+
     'allowed_origins' => [
-        'http://localhost:3000', 
+        'http://localhost:3000',
         'http://192.168.50.86:3000',
-        'http://localhost:3001', 
+        'http://localhost:3001',
         'http://192.168.50.86:3001',
+        'https://casanova-nextjs-frontend.ey.r.appspot.com',
+        'https://casanova.jonas-alexander.dk',
     ],
 
     'allowed_origins_patterns' => [],

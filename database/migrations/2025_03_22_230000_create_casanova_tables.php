@@ -35,8 +35,8 @@ class CreateCasaNovaTables extends Migration
             $table->string($prefix . 'Title', 255); // Property title
             $table->text($prefix . 'Description')->nullable(); // Property description
             $table->string($prefix . 'Address', 500);
-            $table->integer($prefix . 'Latitude');
-            $table->integer($prefix . 'Longitude');
+            $table->decimal($prefix . 'Latitude');
+            $table->decimal($prefix . 'Longitude');
             $table->string($prefix . 'City', 255);
             // $table->string($prefix . 'State', 255);
             $table->integer($prefix . 'Zip_Code');
@@ -58,7 +58,7 @@ class CreateCasaNovaTables extends Migration
         // Property Images table
         Schema::create('CN_Property_Images', function (Blueprint $table) {
             $prefix = 'Image_';
-            
+
             $table->bigIncrements($prefix . 'ID'); // Primary key
             $table->bigInteger('Property_ID')->unsigned(); // Foreign key to CN_Properties
             $table->string($prefix . 'Name', 255)->nullable(); // File name
@@ -97,7 +97,7 @@ class CreateCasaNovaTables extends Migration
             $table->bigIncrements($prefix . 'ID'); // Primary key
             $table->bigInteger('Tenant_ID')->unsigned(); // Foreign key to CN_Users (tenant)
             $table->bigInteger('Property_ID')->unsigned(); // Foreign key to CN_Properties
-            
+
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 
             $table->foreign('Tenant_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
@@ -112,7 +112,7 @@ class CreateCasaNovaTables extends Migration
             $table->bigInteger('User_ID')->unsigned(); // User receiving the notification
             $table->string($prefix . 'Message', 500); // Notification message
             $table->boolean($prefix . 'Read')->default(false); // Read status
-            
+
             MigrationHelper::addDateTimeFields($table, $prefix); // Add common dateTime fields
 
             $table->foreign('User_ID')->references('User_ID')->on('CN_Users')->onDelete('cascade');
@@ -129,4 +129,3 @@ class CreateCasaNovaTables extends Migration
         Schema::dropIfExists('CN_Users');
     }
 }
-?>

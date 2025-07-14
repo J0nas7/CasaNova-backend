@@ -18,13 +18,13 @@ class MyDemoSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('PRAGMA foreign_keys = OFF'); // Important for SQLite
-        DB::table('CN_Users')->truncate();
-        DB::table('CN_Properties')->truncate();
-        DB::table('CN_Property_Images')->truncate();
-        DB::table('CN_Messages')->truncate();
-        DB::table('CN_Favorites')->truncate();
-        DB::statement('PRAGMA foreign_keys = ON');
+        // DB::statement('PRAGMA foreign_keys = OFF'); // Important for SQLite
+        // DB::table('CN_Users')->truncate();
+        // DB::table('CN_Properties')->truncate();
+        // DB::table('CN_Property_Images')->truncate();
+        // DB::table('CN_Messages')->truncate();
+        // DB::table('CN_Favorites')->truncate();
+        // DB::statement('PRAGMA foreign_keys = ON');
 
         $faker = Faker::create();
 
@@ -104,38 +104,19 @@ class MyDemoSeeder extends Seeder
 
         // Create Property Images with $images array
         $exteriorImages = [
-            'https://images.squarespace-cdn.com/content/v1/58487dc4b8a79b6d02499b60/1568694792952-WBFS9R58HTK5R3AQ8RYN/93d1c77d-e64e-4c4c-9c13-ac34c1bfe057-0.jpg?format=1000w',
-            'https://hips.hearstapps.com/hmg-prod/images/bojnice-castle-1603142898.jpg?crop=0.668xw:1.00xh;0.116xw,0&resize=980:*',
-            'https://www.theadvertiser.com/gcdn/-mm-/b1e69d941f2b942ae73b95e0443233dd7c8240ae/c=0-67-1280-790/local/-/media/2016/05/04/LAGroup/LafayetteLA/635979569706799881-Seafair-Air.jpg?width=660&height=373&fit=crop&format=pjpg&auto=webp',
-            'https://cdn.vox-cdn.com/thumbor/i87U94wmqg-o_-uqHb2agO9A51A=/0x0:665x441/1200x800/filters:focal(258x126:364x232)/cdn.vox-cdn.com/uploads/chorus_image/image/53240683/genMid.08838540_1_6.0.jpg',
-            'https://www.shutterstock.com/image-photo/narrow-victorian-row-houses-peaked-600nw-2320936199.jpg',
-            'https://townsquare.media/site/392/files/2020/11/The-Mansion.jpg'
+            '/listings/exterior-1.jpg',
+            '/listings/exterior-2.jpg',
+            '/listings/exterior-3.jpg',
+            '/listings/exterior-4.jpg',
+            '/listings/exterior-5.jpg',
+            '/listings/exterior-6.webp',
         ];
 
         // Interior images (for non-featured images)
-        $interiorImages = [
-            'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1571459/pexels-photo-1571459.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/667838/pexels-photo-667838.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1571458/pexels-photo-1571458.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/827518/pexels-photo-827518.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1648768/pexels-photo-1648768.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1571452/pexels-photo-1571452.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/439227/pexels-photo-439227.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/2826787/pexels-photo-2826787.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1125136/pexels-photo-1125136.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/271795/pexels-photo-271795.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/53577/hotel-architectural-tourism-travel-53577.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/1457847/pexels-photo-1457847.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg?auto=compress&cs=tinysrgb&w=1200',
-            'https://images.pexels.com/photos/210265/pexels-photo-210265.jpeg?auto=compress&cs=tinysrgb&w=1200'
-        ];
+        $interiorImages = [];
+        for ($i = 1; $i <= 20; $i++) {
+            $interiorImages[] = '/listings/interior-' . $i . '.jpeg';
+        }
 
         // Array to track already assigned featured images
         $usedFeaturedImages = [];
@@ -162,7 +143,7 @@ class MyDemoSeeder extends Seeder
 
             // Select up to 2 non-featured images (interiors)
             $selectedInteriorImages = array_slice($interiorImages, 0, 2);
-            
+
             $imageOrder = 2; // Start with 2 since 1 is for the featured image
             foreach ($selectedInteriorImages as $imageUrl) {
                 PropertyImage::create([
